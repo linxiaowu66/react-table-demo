@@ -16,44 +16,40 @@ a:hover {
   text-decoration: underline;
 }
 
-code {
-  background-color: #f8f8f8;
-  border: 1px solid #ddd;
-  border-radius: 3px;
-  font-family: "Bitstream Vera Sans Mono", Consolas, Courier, monospace;
-  font-size: 12px;
-  margin: 0 2px;
-  padding: 0 5px;
+.tableBox>tbody>tr>td, .tableBox>tbody>tr>th, .tableBox>thead>tr>td, .tableBox>thead>tr>th {
+     padding: 8px;
+     line-height: 1.42857143;
+     vertical-align: top;
+}
+.tableBox>thead>tr>th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #ddd;
+}
+tr {
+  display: table-row;
+  vertical-align: inherit;
+  border-color: inherit;
+}
+th {
+   text-align: left;
+}
+td, th {
+   padding: 0;
 }
 
-h1, h2, h3, h4 {
-  font-weight: bold;
-  margin: 0 0 15px;
-  padding: 0;
+.tableBox>tbody>tr:nth-of-type(odd) {
+   background-color: #f9f9f9;
+}
+.tableBox{
+  width: 100%;
+  max-width: 100%;
 }
 
-h1 {
-  border-bottom: 1px solid #ddd;
-  font-size: 2.5em;
+.tableHead{
+    display: table-header-group;
+    vertical-align: middle;
+    border-color: inherit;
 }
 
-h2 {
-  border-bottom: 1px solid #eee;
-  font-size: 2em;
-}
 
-h3 {
-  font-size: 1.5em;
-}
 
-h4 {
-  font-size: 1.2em;
-}
-
-p, ul {
-  margin: 15px 0;
-}
-
-ul {
-  padding-left: 30px;
-}
