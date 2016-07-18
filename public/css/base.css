@@ -23,3 +23,7 @@ a:hover {
 #searchSubmit{
   margin-left: 5px;
 }
+
+.tableAction button{
+  margin-right: 5px;
+}
