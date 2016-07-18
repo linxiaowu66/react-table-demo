@@ -1,17 +1,21 @@
 var data = [
   {fruitName: "Apple", color: "green"},
   {fruitName: "Orange",color: "yellow"},
-    {fruitName: "grape", color:"purple"},
-    {fruitName: "banana", color:"yellow"},
-    {fruitName: "pear", color:"yellow"}
+  {fruitName: "grape", color:"purple"},
+  {fruitName: "banana", color:"yellow"},
+  {fruitName: "pear", color:"yellow"}
 ];
 
-var TableBox = React.createClass({
+var MainWrapper = React.createClass({
   getInitialState: function(){
-    return {data:[]}
+    return {
+        data:[],
+        itemCheck: []
+    }
   },
     handleSearch: function(queryString){
-      var fruitInfo = this.state.data;
+        /*Seach is based on the all data source*/
+      var fruitInfo = this.props.data;
       var result = [];
       fruitInfo.map(function(fruit){
          if (fruit.fruitName === queryString || fruit.color === queryString){
@@ -27,78 +31,47 @@ var TableBox = React.createClass({
       this.setState({data: newFruits});
       data.push(fruit);  
     },
-  componentDidMount: function(){
-      this.setState({data:data});
+  handleItemCheck: function(fruitCheckStatus){
+     var changedFruitName = fruitCheckStatus.fruitName;
+     var status = fruitCheckStatus.isChecked;
+     var currentStatus = this.state.itemCheck;
+
+     console.log(currentStatus);
+     this.props.data.map(function(fruit, index){
+        if (fruit.fruitName == changedFruitName){
+          
+        }
+     })
   },
-  render: function (){
-    return (
-      <table className="tableBox">
-        <TableCaption title={this.props.title} />
-        <TableHead head={this.props.head} />
-        <TableContent data = {this.state.data} />
-        <TableSearch onSearchSubmit={this.handleSearch} />
-        <TableAdd onAddSubmit={this.handleAdd} />
-      </table>
-    )
-  }
-})
 
-var TableHead  = React.createClass({
-  render: function (){
-    var headNodes = this.props.head.map(function (headInfo, i){
-      return <th key={"head"+i}>{headInfo}</th>
-    })
-
-    return (
-      <thead className="tableHead">  
-        <tr>
-          {headNodes}
-        </tr>
-      </thead>
+  componentDidMount: function(){
+      this.setState({data:data,itemCheck: [false, false, false]});
+  },
+  render: function(){
+      return (
+      <div className="mainWrapper">
+    <TableAction handleAdd = {this.handleAdd} handleSearch = {this.handleSearch} />
+    <TableBox tableHead = {this.props.head} 
+              data = {this.state.data} 
+              itemCheckUpdate={this.handleItemCheck}
+    />
+    </div>
     )
   }
 });
 
-var TableCaption = React.createClass({
-
-  render: function (){
-    return (
-      <caption>
-        {this.props.title}
-      </caption>
-    )
-  }
-})
-
-var TableContent = React.createClass({
-  
+var TableAction = React.createClass({
     render: function(){
-        var rowNodes = this.props.data.map(function(tableList, i){
-             return (
-                 <RowNode fruitName = {tableList.fruitName} color={tableList.color} key={i}>
-                 </RowNode>
-             )
-         });
-
-      return (
-          <tbody className="tableBody">
-              {rowNodes}
-         </tbody>
+        return (
+      <div className="tableAction"> 
+        <TableAdd onAddSubmit={this.props.handleAdd} />
+        <TableSearch onSearchSubmit={this.props.handleSearch} />
+        <TableEdit  />
+        <TableDelete />
+      </div>
       )
-    }
-})
-
-var RowNode = React.createClass({
-    render: function(){
-      return (
-       <tr>
-        <td>{this.props.fruitName}</td>
-        <td>{this.props.color}</td>  
-       </tr>
-      )
-    }
-})
-
+    } 
+});
 
 var TableSearch = React.createClass({
     handleSubmit: function(e){
@@ -117,11 +90,11 @@ var TableSearch = React.createClass({
 
     render: function(){
       return (
-      <form className="search" onSubmit={this.handleSubmit}>
-         <input type="text" placeholder="Search Key Value" ref="queryString" />
+      <div className="pull-right search" onSubmit={this.handleSubmit}>
+         <input type="text" placeholder="Search" ref="queryString" />
 
-          <input type="submit" value="Post" />
-          </form>
+         <button id="searchSubmit" className="btn btn-default btn-sm">Search</button> 
+         </div>
       )
     }
 })
@@ -145,15 +118,123 @@ var TableAdd  = React.createClass({
 
     render: function(){
       return (
-      <form className="add" onSubmit={this.handleSubmit}>
-         <input type="text" placeholder="fruit name" ref="fruitName" />
-        <input type="text" placeholder="color" ref="color" />
-          <input type="submit" value="Post" />
-          </form>
+      <button className="btn btn-success" onClick={this.handleSubmit}>Add</button>    
+      )
+    }
+});
+
+var TableEdit  = React.createClass({
+
+    render: function(){
+      return (
+        <button className="btn btn-warning" >Edit</button>    
+      )
+    }
+});
+var TableDelete  = React.createClass({
+
+    render: function(){
+      return (
+      <button className="btn btn-danger" >Delete</button>    
+      )
+    }
+});
+
+
+
+
+var TableBox = React.createClass({
+ propTypes: {
+     tableHead: React.PropTypes.array.isRequired,
+  },
+  render: function (){
+    return (
+      <table className="table table-bordered table-striped table-hover">
+        <TableHead tableHead={this.props.tableHead} />
+        <TableContent data = {this.props.data} itemCheckUpdate={this.props.itemCheckUpdate}/>
+      </table>
+    )
+  }
+});
+
+
+var TableHead  = React.createClass({
+  render: function (){
+    var headNodes = this.props.tableHead.map(function (headInfo, i){
+      return <th key={"head"+i}>{headInfo}</th>
+    })
+
+    return (
+      <thead className="tableHead">  
+        <tr>
+          <input type="checkbox"  name="selectAll" />
+          {headNodes}
+        </tr>
+      </thead>
+    )
+  }
+});
+var TableContent = React.createClass({
+
+    render: function(){
+        var rowNodes = this.props.data.map(function(tableList, i){
+             return (
+                 <RowNode fruitName = {tableList.fruitName} 
+                          color={tableList.color} 
+                          key={i} 
+                           />
+             )
+         });
+
+      return (
+          <tbody className="tableBody">
+              {rowNodes}
+         </tbody>
       )
     }
 })
+
+
+var RowNode = React.createClass({
+    getInitialState: function() {
+        return {
+        isChecked: false
+      };
+    },
+    toggleChange: function() {
+        console.log(this.state.isChecked);
+      this.setState({
+        isChecked: !this.state.isChecked});
+      this.props.itemCheckUpdate({isChecked: this.state.isChecked, fruitName: this.props.fruitName});
+   },
+
+    render: function(){
+      return (
+       <tr>
+        <input type = "checkbox" name="item" checked={this.state.isChecked} onChange={this.toggleChange} />
+        <td>{this.props.fruitName}</td>
+        <td>{this.props.color}</td>  
+       </tr>
+      )
+    }
+});
+
+
+var popUpBox = React.createClass({
+   render: function(){
+    return (
+        <div className="popUp"> 
+        
+        </div>
+        )
+   }
+});
+
 ReactDOM.render(
-    <TableBox head={["fruitName", "color"]} title="fruit information"/>,
+  <MainWrapper head={["fruitName", "color"]} data = {data} />,
   document.getElementById('content')
+
 );
+
+
+

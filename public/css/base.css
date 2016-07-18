@@ -16,40 +16,10 @@ a:hover {
   text-decoration: underline;
 }
 
-.tableBox>tbody>tr>td, .tableBox>tbody>tr>th, .tableBox>thead>tr>td, .tableBox>thead>tr>th {
-     padding: 8px;
-     line-height: 1.42857143;
-     vertical-align: top;
-}
-.tableBox>thead>tr>th {
-    vertical-align: bottom;
-    border-bottom: 2px solid #ddd;
-}
-tr {
-  display: table-row;
-  vertical-align: inherit;
-  border-color: inherit;
-}
-th {
-   text-align: left;
-}
-td, th {
-   padding: 0;
+#content .tableAction{
+  margin-bottom: 10px;
 }
 
-.tableBox>tbody>tr:nth-of-type(odd) {
-   background-color: #f9f9f9;
+#searchSubmit{
+  margin-left: 5px;
 }
-.tableBox{
-  width: 100%;
-  max-width: 100%;
-}
-
-.tableHead{
-    display: table-header-group;
-    vertical-align: middle;
-    border-color: inherit;
-}
-
-
-
