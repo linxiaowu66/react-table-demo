@@ -29,5 +29,40 @@ a:hover {
 }
 
 .popUp{
-  display: none;
+  position: fixed;
+  background: #eeeeee;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .35s,visibility .35s,height .35s ease-in-out;
+  overflow: hidden;
+  z-index: 100;
+}
+
+.popUp.open{
+  opacity: .9;
+  visibility: visible;
+  height: 32%;
+  overflow: hidden;
+}
+
+.formControl{
+  text-align: center;
+  position: absolute;
+  top: 10%;
+  left: 35%;
+  background-color: #eee;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+label{
+  margin: 5px 8px;
+}
+
+.submit{
+  margin-top: 5px;
 }
