@@ -27,3 +27,7 @@ a:hover {
 .tableAction button{
   margin-right: 5px;
 }
+
+.popUp{
+  display: none;
+}

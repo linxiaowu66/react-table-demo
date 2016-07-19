@@ -1,16 +1,16 @@
 var data = [
-  {fruitName: "Apple", color: "green"},
-  {fruitName: "Orange",color: "yellow"},
-  {fruitName: "grape", color:"purple"},
-  {fruitName: "banana", color:"yellow"},
-  {fruitName: "pear", color:"yellow"}
+    {fruitName: "Apple", color: "green", checked:false},
+    {fruitName: "Orange",color: "yellow", checked:false},
+    {fruitName: "grape", color:"purple",  checked: false},
+    {fruitName: "banana", color:"yellow", checked: false},
+    {fruitName: "pear", color:"yellow", checked: false}
 ];
 
 var MainWrapper = React.createClass({
   getInitialState: function(){
     return {
       data:[],
-      itemCheck: []
+        editData: [{fruitName:'',color:''}]  
     }
   },
   handleSearch: function(queryString){
@@ -25,55 +25,145 @@ var MainWrapper = React.createClass({
 
     this.setState({data:result});
   },
-  handleAdd: function(fruit){
-    var fruits = this.state.data;
-    var newFruits = fruits.concat([fruit]);
-    this.setState({data: newFruits});
-    data.push(fruit);
+  handleEdit: function(fruit){
+    var fruitInfo = this.state.data;
+    var newItem = {}; 
+    if (fruit.action === "add"){
+        newItem.fruitName = fruit.fruitName;
+        newItem.color = fruit.color;
+        newItem.checked = false;
+       fruitInfo.push(newItem); 
+    }else{
+      fruitInfo[fruit.index].fruitName = fruit.fruitName;
+      fruitInfo[fruit.index].color = fruit.color; 
+      fruitInfo[fruit.index].checked = false;  
+    }
+    this.setState({data:fruitInfo});  
   },
   handleDel: function(){
-    var allActiveEle = document.querySelectorAll('.active');
-    var fruitInfo = this.props.data;
-    var result = [];
+    //var allActiveEle = document.querySelectorAll('.active');
+    var fruitInfo = this.state.data;
+    var removeEles = [];
 
-    if (allActiveEle.length == 0){
-      console.log("Nothing was selected!");
-    }else {
-      for (var index = 0; index < fruitInfo.length; index++){
-       for (var index1 = 0; index1 < allActiveEle.length; index1++){
-         if (fruitInfo[index].fruitName === allActiveEle[index1].getElementsByTagName('td')[0].innerHTML){
-           break
-         }
-       }
-       if (index1 === allActiveEle.length){
-         result.push(fruitInfo[index]);
-       }
+    fruitInfo.map(function(fruit,index){
+      if (fruit.checked === true){
+        removeEles.push(index);
       }
+    })  
+    
+    if (removeEles.length == 0){
+        console.log("Nothing to delete");
+    }else{
+        removeEles.map(function(index){
+          fruitInfo.splice(index, 1);
+          /*sync with local database*/
+          data.splice(index, 1);  
+        })
     }
-    this.setState({data:result});
-  },
 
+    this.setState({data:fruitInfo});
+  },
+  handleEdited: function(){
+    var fruitInfo = this.state.data;
+    var editEles = [];
+    var editIndex = 0;  
+
+    fruitInfo.map(function(fruit,index){
+      if (fruit.checked === true){
+        fruit.index = index;
+        editEles.push(fruit);  
+      }
+    })  
+    
+    if (editEles.length == 0){
+        console.log("Nothing to edit");
+    }else if(editEles.length > 1){
+      console.log("selecting wrong!");
+    }else{
+      this.setState({editData: editEles});
+    }
+  },
+  handleChecked: function(fruitObj){
+     
+     data[fruitObj.index].checked = fruitObj.isChecked; 
+
+     this.setState({data:data}); 
+
+  },
+  handleAllChecked: function(isChecked){
+    var fruitInfo = this.state.data;
+
+    fruitInfo.map(function(fruit){
+      fruit.checked = isChecked;
+    })
+
+    this.setState({data:fruitInfo});      
+  },
   componentDidMount: function(){
     this.setState({data:data});
   },
   render: function(){
     return (
       <div className="mainWrapper">
-        <TableAction handleAdd = {this.handleAdd} handleSearch = {this.handleSearch} handleDel = {this.handleDel}/>
+        <TableAction  handleSearch = {this.handleSearch} handleDel = {this.handleDel} handleEdited={this.handleEdited}/>
         <TableBox tableHead = {this.props.head}
                   data = {this.state.data}
+                  handleChecked = {this.handleChecked}
+                  handleAllChecked = {this.handleAllChecked}
         />
+        <PopUpBox handleEdit={this.handleEdit} data={this.state.editData}/>
       </div>
     )
   }
 });
 
+var PopUpBox = React.createClass({
+    handleSubmit: function(e) {
+      e.preventDefault();
+      var name = this.refs.name.value.trim();
+      var color = this.refs.color.value.trim();
+      if (!name || !color) {
+         return;
+      }
+      var editItem = {
+        fruitName: name,
+        color: color,  
+      };
+      /*This is a add action*/  
+      if (this.props.data[0].checked == undefined){
+       editItem.action = "add"; 
+      }else{ /*This is a edit action*/
+       editItem.action = "edit";
+       editItem.index = this.props.data[0].index;     
+      }
+
+      this.props.handleEdit(editItem);
+      
+      this.refs.name.value = '';
+      this.refs.color.value = '';
+      return;
+    },
+    
+  render: function(){
+    return (
+      <div className="popUp">
+        <form className="formControl" onSubmit={this.handleSubmit}>
+          <p>Fruit Name</p>
+          <input type="text" ref="name" value={this.props.data[0].fruitName} />
+          <p>Fruit Color</p>
+          <input type="text" ref="color" defaultValue={this.props.data[0].color} />
+          <input type="submit" value="Submit" />
+        </form>
+      </div>
+    )
+  }
+});
 var TableAction = React.createClass({
   render: function(){
     return (
       <div className="tableAction">
-        <TableAdd onAddSubmit={this.props.handleAdd} />
-        <TableEdit  />
+        <TableAdd />
+        <TableEdit  onEditSubmit={this.props.handleEdited}/>
         <TableDelete onDeleteSubmit = {this.props.handleDel}/>
         <TableSearch onSearchSubmit={this.props.handleSearch} />
       </div>
@@ -98,10 +188,10 @@ var TableSearch = React.createClass({
 
   render: function(){
     return (
-      <div className="pull-right search" onSubmit={this.handleSubmit}>
+      <div className="pull-right search">
         <input type="text" placeholder="Search" ref="queryString" />
 
-        <button id="searchSubmit" className="btn btn-default btn-sm">Search</button>
+        <button id="searchSubmit" className="btn btn-default btn-sm" onClick={this.handleSubmit}>Search</button>
       </div>
     )
   }
@@ -110,16 +200,9 @@ var TableSearch = React.createClass({
 var TableAdd  = React.createClass({
   handleSubmit: function(e){
     e.preventDefault();
-    var fruitName  = this.refs.fruitName.value.trim();
-    var color = this.refs.color.value.trim();
-
-    if(!fruitName || !color){
-      return;
-    }
-    this.props.onAddSubmit({fruitName: fruitName, color:color});
-
-    this.refs.fruitName.value = '';
-    this.refs.color.value = '';
+    
+    var popUpBox = document.querySelector('.popUp');
+    popUpBox.style.display = "block";   
 
     return;
   },
@@ -133,9 +216,17 @@ var TableAdd  = React.createClass({
 
 var TableEdit  = React.createClass({
 
+  handleSubmit: function(e){
+    e.preventDefault();
+    
+    var popUpBox = document.querySelector('.popUp');
+    popUpBox.style.display = "block";   
+    this.props.onEditSubmit();
+    return;
+  },
   render: function(){
     return (
-      <button className="btn btn-warning" >Edit</button>
+      <button className="btn btn-warning" onClick={this.handleSubmit} >Edit</button>
     )
   }
 });
@@ -158,8 +249,8 @@ var TableBox = React.createClass({
   render: function (){
     return (
       <table className="table table-bordered table-striped table-hover">
-        <TableHead tableHead={this.props.tableHead} />
-        <TableContent data = {this.props.data} />
+        <TableHead tableHead={this.props.tableHead} handleChecked = {this.props.handleAllChecked} />
+        <TableContent data = {this.props.data} handleChecked = {this.props.handleChecked} />
       </table>
     )
   }
@@ -167,6 +258,15 @@ var TableBox = React.createClass({
 
 
 var TableHead  = React.createClass({
+  getInitialState: function() {
+    return {
+     isChecked: false
+   };
+  },
+  toggleChange: function() {
+    this.setState({isChecked: !this.state.isChecked});  
+    this.props.handleChecked(!this.state.isChecked);  
+  },
   render: function (){
     var headNodes = this.props.tableHead.map(function (headInfo, i){
       return <th key={"head"+i}>{headInfo}</th>
@@ -175,7 +275,7 @@ var TableHead  = React.createClass({
     return (
       <thead className="tableHead">
       <tr>
-        <input type="checkbox"  name="selectAll" />
+        <input type="checkbox"  name="selectAll" checked={this.state.isChecked} onChange={this.toggleChange}/>
         {headNodes}
       </tr>
       </thead>
@@ -190,9 +290,12 @@ var TableContent = React.createClass({
         <RowNode fruitName = {tableList.fruitName}
                  color={tableList.color}
                  key={i}
+                 index={i}
+                 isChecked = {tableList.checked}
+                 handleChecked = {this.props.handleChecked}
         />
       )
-    });
+    }.bind(this));
 
     return (
       <tbody className="tableBody">
@@ -204,27 +307,22 @@ var TableContent = React.createClass({
 
 
 var RowNode = React.createClass({
-  getInitialState: function() {
-    return {
-      isChecked: false
-    };
-  },
   toggleChange: function() {
-    console.log(this.state.isChecked);
-    var elem = ReactDOM.findDOMNode(this);
-    this.setState({isChecked: !this.state.isChecked});
-    /*get the last time statue, as the setState method can`t reflect the component status*/
+    /*var elem = ReactDOM.findDOMNode(this);
+    
     if (this.state.isChecked === false){
       elem.classList.add('active');
     }else{
       elem.classList.remove('active');
-    }
+    }*/
+    
+    this.props.handleChecked({index: this.props.index, isChecked: !this.props.isChecked});  
   },
 
   render: function(){
     return (
-      <tr>
-        <input type='checkbox' name="item" checked={this.state.isChecked} onChange={this.toggleChange} />
+      <tr data-index={this.props.index}>
+        <input type='checkbox' name="item" checked={this.props.isChecked} onChange={this.toggleChange} />
         <td>{this.props.fruitName}</td>
         <td>{this.props.color}</td>
       </tr>
@@ -232,16 +330,6 @@ var RowNode = React.createClass({
   }
 });
 
-
-var popUpBox = React.createClass({
-  render: function(){
-    return (
-      <div className="popUp">
-
-      </div>
-    )
-  }
-});
 
 ReactDOM.render(
   <MainWrapper head={["fruitName", "color"]} data = {data} />,
