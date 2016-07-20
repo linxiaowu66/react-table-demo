@@ -1,4 +1,4 @@
-var data = [
+var fruitsJson = [
   {fruitName: "Apple", color: "green", checked:false},
   {fruitName: "Orange",color: "yellow", checked:false},
   {fruitName: "grape", color:"purple",  checked: false},
@@ -38,26 +38,28 @@ var MainWrapper = React.createClass({
       fruitInfo[fruit.index].color = fruit.color;
       fruitInfo[fruit.index].checked = false;
     }
-    this.setState({data:fruitInfo});
+    this.setState({data:fruitInfo, editData:[{fruitName:'',color:''}]});
+    var popUpBox = document.querySelector('.popUp');
+    popUpBox.classList.remove("open");
+
   },
   handleDel: function(){
     //var allActiveEle = document.querySelectorAll('.active');
     var fruitInfo = this.state.data;
     var removeEles = [];
 
-    fruitInfo.map(function(fruit,index){
-      if (fruit.checked === true){
+    for(var index = fruitInfo.length - 1; index >= 0; index--){
+      if (fruitInfo[index].checked === true){
         removeEles.push(index);
       }
-    });
+    }
+
 
     if (removeEles.length == 0){
       console.log("Nothing to delete");
     }else{
       removeEles.map(function(index){
         fruitInfo.splice(index, 1);
-        /*sync with local database*/
-        data.splice(index, 1);
       })
     }
 
@@ -66,7 +68,6 @@ var MainWrapper = React.createClass({
   handleEdited: function(){
     var fruitInfo = this.state.data;
     var editEles = [];
-    var editIndex = 0;
 
     fruitInfo.map(function(fruit,index){
       if (fruit.checked === true){
@@ -87,11 +88,14 @@ var MainWrapper = React.createClass({
       this.setState({editData: editEles});
     }
   },
+  handleClose: function(){
+    this.setState({editData: [{fruitName:'',color:''}]});
+  },
   handleChecked: function(fruitObj){
+    var fruitInfo = this.state.data;
+    fruitInfo[fruitObj.index].checked = fruitObj.isChecked;
 
-    data[fruitObj.index].checked = fruitObj.isChecked;
-
-    this.setState({data:data});
+    this.setState({data:fruitInfo});
 
   },
   handleAllChecked: function(isChecked){
@@ -104,7 +108,7 @@ var MainWrapper = React.createClass({
     this.setState({data:fruitInfo});
   },
   componentDidMount: function(){
-    this.setState({data:data});
+    this.setState({data:this.props.data});
   },
   render: function(){
     return (
@@ -115,13 +119,19 @@ var MainWrapper = React.createClass({
                   handleChecked = {this.handleChecked}
                   handleAllChecked = {this.handleAllChecked}
         />
-        <PopUpBox handleEdit={this.handleEdit} data={this.state.editData}/>
+        <PopUpBox handleEdit={this.handleEdit} handleClose={this.handleClose} data={this.state.editData}/>
       </div>
     )
   }
 });
 
 var PopUpBox = React.createClass({
+  getInitialState: function (){
+    return {
+      name: "",
+      color: ""
+    }
+  },
   handleSubmit: function(e) {
     e.preventDefault();
     var name = this.refs.name.value.trim();
@@ -153,18 +163,39 @@ var PopUpBox = React.createClass({
 
     var popUpBox = document.querySelector('.popUp');
     popUpBox.classList.remove("open");
-
+    this.props.handleClose();
     return;
   },
+  componentDidMount: function(){
+    this.setState({
+      name: this.props.data[0].fruitName,
+      color: this.props.data[0].color
+    })
+  },
+  componentWillReceiveProps: function(nextProps) {
+
+    this.setState({
+      name: nextProps.data[0].fruitName,
+      color: nextProps.data[0].color
+    });
+  },
+
+  handleNameChange: function(e){
+    this.setState({name: e.target.value});
+  },
+  handleColorChange: function(e){
+    this.setState({color: e.target.value});
+  },
   render: function(){
+
     return (
       <div className="popUp">
         <form className="formControl" onSubmit={this.handleSubmit}>
-          <label for="name">Fruit Name</label>
-          <input type="text" ref="name" name="name" value={this.props.data[0].fruitName} />
+          <label htmlFor ="name">Fruit Name</label>
+          <input type="text" ref="name" name="name" value={this.state.name} onChange={this.handleNameChange}/>
           <br />
-          <label for="color">Fruit Color</label>
-          <input type="text" ref="color" name="color" value={this.props.data[0].color} />
+          <label htmlFor ="color">Fruit Color</label>
+          <input type="text" ref="color" name="color" value={this.state.color} onChange={this.handleColorChange}/>
           <br />
           <input type="submit" value="Submit" className="btn btn-success submit"/>
         </form>
@@ -351,7 +382,7 @@ var RowNode = React.createClass({
 
 
 ReactDOM.render(
-  <MainWrapper head={["fruitName", "color"]} data = {data} />,
+  <MainWrapper head={["fruitName", "color"]} data = {fruitsJson} />,
   document.getElementById('content')
 
 );
