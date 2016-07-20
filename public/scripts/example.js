@@ -76,10 +76,14 @@ var MainWrapper = React.createClass({
     })
 
     if (editEles.length == 0){
-      console.log("Nothing to edit");
+      alert("Nothing to be selected.");
+      return;
     }else if(editEles.length > 1){
-      console.log("selecting wrong!");
-    }else{
+      alert("only support to edit one item in one time");
+      return;
+    }else{  
+      var popUpBox = document.querySelector('.popUp');
+      popUpBox.classList.add("open");
       this.setState({editData: editEles});
     }
   },
@@ -143,7 +147,15 @@ var PopUpBox = React.createClass({
     this.refs.color.value = '';
     return;
   },
+  handleClose: function(e){
+  
+    e.preventDefault();
 
+    var popUpBox = document.querySelector('.popUp');
+    popUpBox.classList.remove("open");
+
+    return;
+  },
   render: function(){
     return (
       <div className="popUp">
@@ -152,10 +164,13 @@ var PopUpBox = React.createClass({
           <input type="text" ref="name" name="name" value={this.props.data[0].fruitName} />
           <br />
           <label for="color">Fruit Color</label>
-          <input type="text" ref="color" name="color" defaultValue={this.props.data[0].color} />
+          <input type="text" ref="color" name="color" value={this.props.data[0].color} />
           <br />
           <input type="submit" value="Submit" className="btn btn-success submit"/>
         </form>
+        <button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={this.handleClose}>
+          <span aria-hidden="true">&times;</span>
+        </button>
       </div>
     )
   }
@@ -221,8 +236,6 @@ var TableEdit  = React.createClass({
   handleSubmit: function(e){
     e.preventDefault();
 
-    var popUpBox = document.querySelector('.popUp');
-    popUpBox.classList.add("open");
     this.props.onEditSubmit();
     return;
   },
@@ -277,7 +290,9 @@ var TableHead  = React.createClass({
     return (
       <thead className="tableHead">
       <tr>
+        <th>
         <input type="checkbox"  name="selectAll" checked={this.state.isChecked} onChange={this.toggleChange}/>
+        </th>
         {headNodes}
       </tr>
       </thead>
@@ -324,7 +339,9 @@ var RowNode = React.createClass({
   render: function(){
     return (
       <tr data-index={this.props.index}>
-        <input type='checkbox' name="item" checked={this.props.isChecked} onChange={this.toggleChange} />
+         <th>
+          <input type='checkbox' name="item" checked={this.props.isChecked} onChange={this.toggleChange} />
+        </th>
         <td>{this.props.fruitName}</td>
         <td>{this.props.color}</td>
       </tr>
