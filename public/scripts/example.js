@@ -1,9 +1,9 @@
 var fruitsJson = [
-  {fruitName: "Apple", color: "green", checked:false},
-  {fruitName: "Orange",color: "yellow", checked:false},
-  {fruitName: "grape", color:"purple",  checked: false},
-  {fruitName: "banana", color:"yellow", checked: false},
-  {fruitName: "pear", color:"yellow", checked: false}
+  {fruitName: 'Apple', color: 'green', checked:false},
+  {fruitName: 'Orange',color: 'yellow', checked:false},
+  {fruitName: 'grape', color:'purple',  checked: false},
+  {fruitName: 'banana', color:'yellow', checked: false},
+  {fruitName: 'pear', color:'yellow', checked: false}
 ];
 
 var MainWrapper = React.createClass({
@@ -28,7 +28,7 @@ var MainWrapper = React.createClass({
   handleEdit: function(fruit){
     var fruitInfo = this.state.data;
     var newItem = {};
-    if (fruit.action === "add"){
+    if (fruit.action === 'add'){
       newItem.fruitName = fruit.fruitName;
       newItem.color = fruit.color;
       newItem.checked = false;
@@ -40,7 +40,7 @@ var MainWrapper = React.createClass({
     }
     this.setState({data:fruitInfo, editData:[{fruitName:'',color:''}]});
     var popUpBox = document.querySelector('.popUp');
-    popUpBox.classList.remove("open");
+    popUpBox.classList.remove('open');
 
   },
   handleDel: function(){
@@ -56,7 +56,7 @@ var MainWrapper = React.createClass({
 
 
     if (removeEles.length == 0){
-      console.log("Nothing to delete");
+      console.log('Nothing to delete');
     }else{
       removeEles.map(function(index){
         fruitInfo.splice(index, 1);
@@ -77,14 +77,14 @@ var MainWrapper = React.createClass({
     })
 
     if (editEles.length == 0){
-      alert("Nothing to be selected.");
+      alert('Nothing to be selected.');
       return;
     }else if(editEles.length > 1){
-      alert("only support to edit one item in one time");
+      alert('only support to edit one item in one time');
       return;
     }else{  
       var popUpBox = document.querySelector('.popUp');
-      popUpBox.classList.add("open");
+      popUpBox.classList.add('open');
       this.setState({editData: editEles});
     }
   },
@@ -112,7 +112,7 @@ var MainWrapper = React.createClass({
   },
   render: function(){
     return (
-      <div className="mainWrapper">
+      <div className='mainWrapper'>
         <TableAction  handleSearch = {this.handleSearch} handleDel = {this.handleDel} handleEdited={this.handleEdited}/>
         <TableBox tableHead = {this.props.head}
                   data = {this.state.data}
@@ -128,8 +128,8 @@ var MainWrapper = React.createClass({
 var PopUpBox = React.createClass({
   getInitialState: function (){
     return {
-      name: "",
-      color: ""
+      name:'',
+      color: ''
     }
   },
   handleSubmit: function(e) {
@@ -145,9 +145,9 @@ var PopUpBox = React.createClass({
     };
     /*This is a add action*/
     if (this.props.data[0].checked == undefined){
-      editItem.action = "add";
+      editItem.action = 'add';
     }else{ /*This is a edit action*/
-      editItem.action = "edit";
+      editItem.action = 'edit';
       editItem.index = this.props.data[0].index;
     }
 
@@ -162,7 +162,7 @@ var PopUpBox = React.createClass({
     e.preventDefault();
 
     var popUpBox = document.querySelector('.popUp');
-    popUpBox.classList.remove("open");
+    popUpBox.classList.remove('open');
     this.props.handleClose();
     return;
   },
@@ -189,18 +189,18 @@ var PopUpBox = React.createClass({
   render: function(){
 
     return (
-      <div className="popUp">
-        <form className="formControl" onSubmit={this.handleSubmit}>
-          <label htmlFor ="name">Fruit Name</label>
-          <input type="text" ref="name" name="name" value={this.state.name} onChange={this.handleNameChange}/>
+      <div className='popUp'>
+        <form className='formControl' onSubmit={this.handleSubmit}>
+          <label htmlFor ='name'>Fruit Name</label>
+          <input type='text' ref='name' name='name' value={this.state.name} onChange={this.handleNameChange}/>
           <br />
-          <label htmlFor ="color">Fruit Color</label>
-          <input type="text" ref="color" name="color" value={this.state.color} onChange={this.handleColorChange}/>
+          <label htmlFor ='color'>Fruit Color</label>
+          <input type='text' ref='color' name='color' value={this.state.color} onChange={this.handleColorChange}/>
           <br />
-          <input type="submit" value="Submit" className="btn btn-success submit"/>
+          <input type='submit' value='Submit' className='btn btn-success submit'/>
         </form>
-        <button type="button" className="close" data-dismiss="alert" aria-label="Close" onClick={this.handleClose}>
-          <span aria-hidden="true">&times;</span>
+        <button type='button' className='close' data-dismiss='alert' aria-label='Close' onClick={this.handleClose}>
+          <span aria-hidden='true'>&times;</span>
         </button>
       </div>
     )
@@ -209,7 +209,7 @@ var PopUpBox = React.createClass({
 var TableAction = React.createClass({
   render: function(){
     return (
-      <div className="tableAction">
+      <div className='tableAction'>
         <TableAdd />
         <TableEdit  onEditSubmit={this.props.handleEdited}/>
         <TableDelete onDeleteSubmit = {this.props.handleDel}/>
@@ -236,10 +236,10 @@ var TableSearch = React.createClass({
 
   render: function(){
     return (
-      <div className="pull-right search">
-        <input type="text" placeholder="Search" ref="queryString" />
+      <div className='pull-right search'>
+        <input type='text' placeholder='Search' ref='queryString' />
 
-        <button id="searchSubmit" className="btn btn-default btn-sm" onClick={this.handleSubmit}>Search</button>
+        <button id='searchSubmit' className='btn btn-default btn-sm' onClick={this.handleSubmit}>Search</button>
       </div>
     )
   }
@@ -250,14 +250,14 @@ var TableAdd  = React.createClass({
     e.preventDefault();
 
     var popUpBox = document.querySelector('.popUp');
-    popUpBox.classList.add("open");
+    popUpBox.classList.add('open');
 
     return;
   },
 
   render: function(){
     return (
-      <button className="btn btn-success" onClick={this.handleSubmit}>Add</button>
+      <button className='btn btn-success' onClick={this.handleSubmit}>Add</button>
     )
   }
 });
@@ -272,7 +272,7 @@ var TableEdit  = React.createClass({
   },
   render: function(){
     return (
-      <button className="btn btn-warning" onClick={this.handleSubmit} >Edit</button>
+      <button className='btn btn-warning' onClick={this.handleSubmit} >Edit</button>
     )
   }
 });
@@ -280,7 +280,7 @@ var TableDelete  = React.createClass({
 
   render: function(){
     return (
-      <button className="btn btn-danger" onClick = {this.props.onDeleteSubmit}>Delete</button>
+      <button className='btn btn-danger' onClick = {this.props.onDeleteSubmit}>Delete</button>
     )
   }
 });
@@ -294,7 +294,7 @@ var TableBox = React.createClass({
   },
   render: function (){
     return (
-      <table className="table table-bordered table-striped table-hover">
+      <table className='table table-bordered table-striped table-hover'>
         <TableHead tableHead={this.props.tableHead} handleChecked = {this.props.handleAllChecked} />
         <TableContent data = {this.props.data} handleChecked = {this.props.handleChecked} />
       </table>
@@ -315,14 +315,14 @@ var TableHead  = React.createClass({
   },
   render: function (){
     var headNodes = this.props.tableHead.map(function (headInfo, i){
-      return <th key={"head"+i}>{headInfo}</th>
+      return <th key={'head'+i}>{headInfo}</th>
     })
 
     return (
-      <thead className="tableHead">
+      <thead className='tableHead'>
       <tr>
         <th>
-        <input type="checkbox"  name="selectAll" checked={this.state.isChecked} onChange={this.toggleChange}/>
+        <input type='checkbox'  name='selectAll' checked={this.state.isChecked} onChange={this.toggleChange}/>
         </th>
         {headNodes}
       </tr>
@@ -346,7 +346,7 @@ var TableContent = React.createClass({
     }.bind(this));
 
     return (
-      <tbody className="tableBody">
+      <tbody className='tableBody'>
       {rowNodes}
       </tbody>
     )
@@ -371,7 +371,7 @@ var RowNode = React.createClass({
     return (
       <tr data-index={this.props.index}>
          <th>
-          <input type='checkbox' name="item" checked={this.props.isChecked} onChange={this.toggleChange} />
+          <input type='checkbox' name='item' checked={this.props.isChecked} onChange={this.toggleChange} />
         </th>
         <td>{this.props.fruitName}</td>
         <td>{this.props.color}</td>
@@ -382,7 +382,7 @@ var RowNode = React.createClass({
 
 
 ReactDOM.render(
-  <MainWrapper head={["fruitName", "color"]} data = {fruitsJson} />,
+  <MainWrapper head={['fruitName', 'color']} data = {fruitsJson} />,
   document.getElementById('content')
 
 );
