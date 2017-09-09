@@ -31,7 +31,7 @@ Click the `Add` button, and it will toggle a frame:
 Then enter the string in these two input boxes what you want, obviously I 
 assume you will enter the right string.(i.e I don`t check what you input)
 
-![](http://blogimages2016.oss-cn-hangzhou.aliyuncs.com/reactTable/Add2png.png)
+![](http://blogimages2016.oss-cn-hangzhou.aliyuncs.com/react/Add2png.png)
 
 Then click the `submit` button to post your new item to local database.
 
